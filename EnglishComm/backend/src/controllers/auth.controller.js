@@ -13,7 +13,7 @@ export const register = async (req, res) => {
     );
 
     if (exists.length > 0) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "Tài khoản đã tồn tại" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -23,7 +23,7 @@ export const register = async (req, res) => {
       [username, email, hashedPassword, avatar]
     );
 
-    res.status(201).json({ message: "Register success" });
+    res.status(201).json({ message: "Đăng ký thành công" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -39,14 +39,14 @@ export const login = async (req, res) => {
     );
 
     if (rows.length === 0) {
-      return res.status(400).json({ message: "Email not found" });
+      return res.status(400).json({ message: "Email không tồn tại" });
     }
 
     const user = rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({ message: "Wrong password" });
+      return res.status(400).json({ message: "Sai mật khẩu" });
     }
 
     const token = jwt.sign(

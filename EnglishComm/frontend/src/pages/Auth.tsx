@@ -46,7 +46,7 @@ export default function Auth() {
       const data = await res.json();
 
       if (!res.ok) {
-        setErrorMessage(data.message || "Register failed");
+        setErrorMessage(data.message || "Đăng ký thất bại");
         return;
       }
 
@@ -79,7 +79,7 @@ export default function Auth() {
       const data = await res.json();
 
       if (!res.ok) {
-        setErrorMessage(data.message || "Login failed");
+        setErrorMessage(data.message || "Đăng nhập thất bại");
         return;
       }
 
@@ -104,9 +104,12 @@ export default function Auth() {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
 
+  
+  const inputClass = "w-full border border-gray-300 px-4 py-3 rounded transition-all duration-200 hover:border-blue-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100";
+  const selectClass = "border border-gray-300 px-4 py-3 rounded transition-all duration-200 hover:border-blue-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100";
+
   return (
     <div className="min-h-screen flex font-inter">
-      {/* LEFT */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-600 via-blue-500 to-blue-400 flex-col justify-between p-12 text-white">
         <div>
           <h1 className="text-6xl font-bold tracking-tight">EnglishComm</h1>
@@ -117,90 +120,122 @@ export default function Auth() {
         </footer>
       </div>
 
-      {/* RIGHT */}
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-gray-50 px-6 py-12">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-sm"> 
           {/* TABS */}
-          <div className="flex space-x-8 mb-10">
+          <div className="flex space-x-8 mb-10 border-b border-gray-200 pb-2"> 
             <button
               onClick={() => setActiveTab("register")}
-              className={`text-2xl font-semibold pb-2 border-b-2 ${
+              className={`text-2xl font-semibold pb-2 border-b-2 transition-colors duration-200 -mb-2.5 ${
                 activeTab === "register"
                   ? "text-blue-600 border-blue-600"
-                  : "text-gray-500 border-transparent"
+                  : "text-gray-400 border-transparent hover:text-blue-500"
               }`}
             >
-              Register
+              Đăng ký
             </button>
             <button
               onClick={() => setActiveTab("login")}
-              className={`text-2xl font-semibold pb-2 border-b-2 ${
+              className={`text-2xl font-semibold pb-2 border-b-2 transition-colors duration-200 -mb-2.5 ${
                 activeTab === "login"
                   ? "text-blue-600 border-blue-600"
-                  : "text-gray-500 border-transparent"
+                  : "text-gray-400 border-transparent hover:text-blue-500"
               }`}
             >
-              Log in
+              Đăng nhập
             </button>
           </div>
 
           {/* MESSAGE */}
           {successMessage && (
-            <div className="mb-6 bg-green-100 text-green-700 p-3 rounded">
+            <div className="mb-6 bg-green-100 text-green-700 p-3 rounded border border-green-200 animate-pulse">
               {successMessage}
             </div>
           )}
           {errorMessage && (
-            <div className="mb-6 bg-red-100 text-red-700 p-3 rounded">
+            <div className="mb-6 bg-red-100 text-red-700 p-3 rounded border border-red-200">
               {errorMessage}
             </div>
           )}
 
           {/* REGISTER */}
           {activeTab === "register" && (
-            <form onSubmit={handleRegister} className="space-y-6">
-              <input className="w-full border px-4 py-3 rounded" placeholder="Name" value={regName} onChange={(e) => setRegName(e.target.value)} />
+            <form onSubmit={handleRegister} className="space-y-6 animate-fade-in-up"> 
+              <input 
+                className={inputClass} 
+                placeholder="Họ và tên" 
+                value={regName} 
+                onChange={(e) => setRegName(e.target.value)} 
+              />
 
               <div className="grid grid-cols-3 gap-3">
-                <select className="border px-4 py-3 rounded" value={regDay} onChange={(e) => setRegDay(e.target.value)} required>
-                  <option value="">Date</option>
+                <select className={selectClass} value={regDay} onChange={(e) => setRegDay(e.target.value)} required>
+                  <option value="">Ngày</option>
                   {days.map(d => <option key={d}>{d}</option>)}
                 </select>
-                <select className="border px-4 py-3 rounded" value={regMonth} onChange={(e) => setRegMonth(e.target.value)} required>
-                  <option value="">Month</option>
+                <select className={selectClass} value={regMonth} onChange={(e) => setRegMonth(e.target.value)} required>
+                  <option value="">Tháng</option>
                   {months.map(m => <option key={m}>{m}</option>)}
                 </select>
-                <select className="border px-4 py-3 rounded" value={regYear} onChange={(e) => setRegYear(e.target.value)} required>
-                  <option value="">Year</option>
+                <select className={selectClass} value={regYear} onChange={(e) => setRegYear(e.target.value)} required>
+                  <option value="">Năm</option>
                   {years.map(y => <option key={y}>{y}</option>)}
                 </select>
               </div>
 
               <div className="flex gap-3">
-                <input readOnly value={regAvatar ? regAvatar.name : ""} placeholder="No file chosen" className="flex-1 border px-4 py-3 rounded bg-white" />
-                <label className="px-5 py-3 bg-black text-white rounded cursor-pointer">
-                  Choose
+                <input 
+                  readOnly 
+                  value={regAvatar ? regAvatar.name : ""} 
+                  placeholder="Chọn ảnh đại diện" 
+                  className={`flex-1 bg-gray-50 cursor-default ${inputClass} focus:ring-0`} 
+                />
+                <label className="px-5 py-3 bg-black text-white rounded cursor-pointer transition-colors duration-200 hover:bg-gray-800 active:scale-95 flex items-center justify-center">
+                  Chọn
                   <input type="file" accept="image/*" hidden onChange={(e) => setRegAvatar(e.target.files?.[0] || null)} />
                 </label>
               </div>
 
-              <input className="w-full border px-4 py-3 rounded" placeholder="Email" type="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)} />
-              <input className="w-full border px-4 py-3 rounded" placeholder="Password" type="password" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} />
+              <input 
+                className={inputClass} 
+                placeholder="Email" 
+                type="email" 
+                value={regEmail} 
+                onChange={(e) => setRegEmail(e.target.value)} 
+              />
+              <input 
+                className={inputClass} 
+                placeholder="Mật khẩu" 
+                type="password" 
+                value={regPassword} 
+                onChange={(e) => setRegPassword(e.target.value)} 
+              />
 
-              <button className="w-full bg-black text-white py-4 rounded font-semibold">
-                Register
+              <button className="w-full bg-black text-white py-4 rounded font-semibold transition-all duration-200 hover:bg-gray-800 hover:shadow-lg active:scale-[0.99]">
+                Đăng ký
               </button>
             </form>
           )}
 
           {/* LOGIN */}
           {activeTab === "login" && (
-            <form onSubmit={handleLogin} className="space-y-6">
-              <input className="w-full border px-4 py-3 rounded" placeholder="Email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
-              <input className="w-full border px-4 py-3 rounded" placeholder="Password" type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
+            <form onSubmit={handleLogin} className="space-y-6 animate-fade-in-up">
+              <input 
+                className={inputClass} 
+                placeholder="Email" 
+                value={loginEmail} 
+                onChange={(e) => setLoginEmail(e.target.value)} 
+              />
+              <input 
+                className={inputClass} 
+                placeholder="Mật khẩu" 
+                type="password" 
+                value={loginPassword} 
+                onChange={(e) => setLoginPassword(e.target.value)} 
+              />
 
-              <button className="w-full bg-black text-white py-4 rounded font-semibold">
-                Log in
+              <button className="w-full bg-black text-white py-4 rounded font-semibold transition-all duration-200 hover:bg-gray-800 hover:shadow-lg active:scale-[0.99]">
+                Đăng nhập
               </button>
             </form>
           )}

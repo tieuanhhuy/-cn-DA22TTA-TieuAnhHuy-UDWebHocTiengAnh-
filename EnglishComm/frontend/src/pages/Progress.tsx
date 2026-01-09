@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // <--- 1. Thêm useNavigate
 import Navbar from "../components/Navbar";
 
 interface HistoryItem {
@@ -16,6 +16,7 @@ interface HistoryItem {
 export default function Progress() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // <--- 2. Khởi tạo hook điều hướng
 
   // Gọi API lấy lịch sử
   useEffect(() => {
@@ -91,7 +92,9 @@ export default function Progress() {
                     {history.map((item, index) => (
                       <tr 
                         key={item.id || index} 
-                        className="hover:bg-purple-50/50 transition duration-200 group"
+                        /* --- 3. THÊM SỰ KIỆN CLICK VÀ CON TRỎ CHUỘT --- */
+                        onClick={() => navigate(`/practice/result/${item.id}`)}
+                        className="hover:bg-purple-50/50 transition duration-200 group cursor-pointer"
                       >
                         {/* Cột Thời gian */}
                         <td className="p-5 text-gray-600 text-sm whitespace-nowrap">

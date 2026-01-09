@@ -66,7 +66,7 @@ export default function ConversationTopics() {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-gray-800 mb-4">
-              Luyện Giao Tiếp Thực Tế
+              Luyện giao tiếp thực tế
             </h1>
             <p className="text-xl text-gray-600">
               Chọn tình huống → Học hội thoại

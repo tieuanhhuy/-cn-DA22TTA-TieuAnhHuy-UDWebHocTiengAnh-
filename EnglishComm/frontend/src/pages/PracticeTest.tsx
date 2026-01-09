@@ -113,7 +113,6 @@ export default function PracticeTest() {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center font-bold text-purple-600">Đang tải...</div>;
   
-  // DÒNG NÀY KIỂM TRA DỮ LIỆU
   if (!questions.length) return (
     <>
       <Navbar />
@@ -127,7 +126,7 @@ export default function PracticeTest() {
   const q = questions[current];
   const hasAnswer = answers[current] !== null;
 
-  // Tô màu đáp án
+  // Tô màu đáp án trong khung câu hỏi chính
   const getOptionClass = (i: number) => {
       if (!isSubmitted) {
           return answers[current] === i 
@@ -148,6 +147,7 @@ export default function PracticeTest() {
       <Navbar />
       <div className="min-h-screen bg-linear-to-br from-[#b2d1ef] to-[#f0eaf6] pt-24 pb-12 flex flex-col items-center px-4">
         
+        {/* BẢNG ĐIỂM (HIỆN KHI ĐÃ NỘP) */}
         {isSubmitted && resultData && (
           <div className="w-full max-w-4xl mb-6 bg-white rounded-3xl shadow-xl p-6 border-l-8 border-purple-500 flex justify-between items-center animate-bounce-in">
              <div><h2 className="text-2xl font-bold">Kết quả</h2></div>
@@ -158,6 +158,7 @@ export default function PracticeTest() {
           </div>
         )}
 
+        {/* KHUNG CÂU HỎI CHÍNH */}
         <div className="w-full max-w-4xl">
           <div className="bg-white/80 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/40 overflow-hidden relative">
             
@@ -166,7 +167,6 @@ export default function PracticeTest() {
             </div>
 
             <div className="p-8 md:p-10">
-              {/* Hiển thị câu hỏi (Tiếng Việt) */}
               <h1 className="text-2xl font-bold text-gray-800 mb-8">{q.question}</h1>
 
               <div className="space-y-4">
@@ -176,7 +176,6 @@ export default function PracticeTest() {
                     <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center mr-4 font-bold ${isSubmitted ? 'border-transparent' : 'border-gray-300'}`}>
                       {String.fromCharCode(65 + i)}
                     </div>
-                    {/* Hiển thị đáp án (Tiếng Anh) */}
                     <span className="text-lg font-medium">{o}</span>
                   </button>
                 ))}
@@ -195,7 +194,9 @@ export default function PracticeTest() {
               {!isSubmitted && (
                  <div className="flex gap-2">
                     <button onClick={clearAnswer} disabled={!hasAnswer} className="px-4 py-2 text-red-500 border border-red-200 rounded-full">✕ Xóa</button>
-                    <button onClick={toggleFlag} className="px-4 py-2 text-yellow-600 border border-yellow-400 rounded-full">{flagged.includes(current) ? "Bỏ cờ" : "Cờ"}</button>
+                    <button onClick={toggleFlag} className={`px-4 py-2 border rounded-full transition-colors ${flagged.includes(current) ? "bg-yellow-100 border-yellow-400 text-yellow-700" : "text-yellow-600 border-yellow-400"}`}>
+                        {flagged.includes(current) ? "🚩 Đã gắn cờ" : "🏳️ Gắn cờ"}
+                    </button>
                  </div>
               )}
 
@@ -211,6 +212,28 @@ export default function PracticeTest() {
             </div>
           </div>
         </div>
+
+        {/* ===== BẢN ĐỒ CÂU HỎI ===== */}
+        <div className="w-full max-w-4xl mt-8 mb-12 flex justify-center flex-wrap gap-2">
+            {questions.map((_, idx) => (
+                <button 
+                    key={idx} 
+                    onClick={() => setCurrent(idx)}
+                    className={`w-10 h-10 rounded-lg font-bold border transition shadow-sm ${
+                        current === idx ? "scale-110 ring-2 ring-offset-2 ring-purple-400 z-10" : ""
+                    } ${
+                        isSubmitted 
+                            ? (resultData?.detailResult?.[idx]?.isCorrect ? "bg-green-500 text-white border-green-600" : "bg-red-500 text-white border-red-600")
+                            : (answers[idx] !== null ? "bg-purple-100 text-purple-700 border-purple-300" : "bg-white text-gray-400 border-gray-200 hover:bg-gray-50")
+                    } ${
+                        flagged.includes(idx) && !isSubmitted ? "ring-2 ring-yellow-400" : ""
+                    }`}
+                >
+                    {idx + 1}
+                </button>
+            ))}
+        </div>
+
       </div>
     </>
   );

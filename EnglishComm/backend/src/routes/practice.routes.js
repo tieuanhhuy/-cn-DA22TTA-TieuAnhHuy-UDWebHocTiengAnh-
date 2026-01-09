@@ -21,4 +21,5 @@ router.post("/submit", authMiddleware, submitPractice);
 router.get("/progress", authMiddleware, getProgress);
 router.get("/review/:id", authMiddleware, getPracticeDetail);
 
+router.get("/history/:id", authMiddleware, getPracticeDetail);
 export default router;

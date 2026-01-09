@@ -20,6 +20,7 @@ import PracticeSelect from './pages/PracticeSelect';
 import PracticeTopicSelect from './pages/PracticeTopicSelect';
 import PracticeTest from './pages/PracticeTest';
 import Progress from './pages/Progress';
+import PracticeResultDetail from "./pages/PracticeResultDetail";
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -47,7 +48,8 @@ createRoot(document.getElementById('root')!).render(
         
         {/* TIẾN ĐỘ */}
         <Route path="/progress" element={<Progress />} />
-
+        <Route path="/practice/result/:id" element={<PracticeResultDetail />} />
+        
         {/* ADMIN */}
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/vocabulary" element={<VocabularyAdmin />} />
