@@ -2,14 +2,15 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 interface Topic {
   id: number;
   title: string;
-  description: string | null;
-  icon: string | null;
-  total_words: number;
+  icon?: string | null;
+  total_words?: number;
 }
+
 
 export default function VocabularyTopics() {
   const [topics, setTopics] = useState<Topic[]>([]);
@@ -69,13 +70,19 @@ export default function VocabularyTopics() {
                 to={`/vocabulary/${t.id}`}
                 className="group relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
               >
-                <div className="bg-gradient-to-br from-purple-400 to-pink-400 w-full h-64 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                   <img
-                      src={`/topics/${t.icon}`}
-                      alt={t.title}
-                      className="w-full h-full object-cover"
-                    />
+                <div className="relative w-full pt-[100%] rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-4 group-hover:shadow-pink-500/60">
+                  <img
+                    src={
+                      t.icon
+                        ? `http://localhost:5000/images/topics/${t.icon}`
+                        : "/default-topic.png"
+                    }
+                    alt={t.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 </div>
+
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 <div className="absolute bottom-6 left-6 text-left">
                   <p className="text-white text-2xl font-bold drop-shadow-lg">
@@ -97,6 +104,7 @@ export default function VocabularyTopics() {
             ← Quay lại trang chủ
           </Link>
         </div>
+        <Footer />
       </div>
     </>
   );

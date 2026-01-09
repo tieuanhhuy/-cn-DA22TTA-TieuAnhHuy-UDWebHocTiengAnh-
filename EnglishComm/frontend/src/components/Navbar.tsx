@@ -1,33 +1,84 @@
-// src/components/Navbar.tsx
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [isLearnOpen, setIsLearnOpen] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isUserOpen, setIsUserOpen] = useState(false);
 
-  // Hover mượt với delay
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  const learnTimeout = useRef<NodeJS.Timeout | null>(null);
+  const userTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const navigate = useNavigate();
+
+  // ✅ CHỈ LẤY USER TỪ LOCALSTORAGE (1 NGUỒN DUY NHẤT)
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  // ===== LEARN HOVER =====
+  const handleLearnEnter = () => {
+    if (learnTimeout.current) clearTimeout(learnTimeout.current);
     setIsLearnOpen(true);
   };
 
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
+  const handleLearnLeave = () => {
+    learnTimeout.current = setTimeout(() => {
       setIsLearnOpen(false);
+    }, 150);
+  };
+
+  // ===== USER HOVER =====
+  const handleUserEnter = () => {
+    if (userTimeout.current) clearTimeout(userTimeout.current);
+    setIsUserOpen(true);
+  };
+
+  const handleUserLeave = () => {
+    userTimeout.current = setTimeout(() => {
+      setIsUserOpen(false);
     }, 150);
   };
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (learnTimeout.current) clearTimeout(learnTimeout.current);
+      if (userTimeout.current) clearTimeout(userTimeout.current);
     };
   }, []);
+
+  // ===== LOGOUT =====
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/auth");
+  };
+
+  // ===== AVATAR RENDER =====
+  const renderAvatar = () => {
+    if (user?.avatar) {
+      return (
+        <img
+          src={`http://localhost:5000/images/${user.avatar}`}
+          alt="avatar"
+          className="w-10 h-10 rounded-full object-cover border shadow-md"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src =
+              "http://localhost:5000/images/default-user.png";
+          }}
+        />
+      );
+    }
+
+    // fallback: chữ cái đầu
+    return (
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white flex items-center justify-center font-bold shadow-md">
+        {user?.username?.charAt(0)?.toUpperCase() || "U"}
+      </div>
+    );
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        {/* Logo */}
+        
+        {/* LOGO */}
         <Link
           to="/"
           className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent"
@@ -35,22 +86,24 @@ export default function Navbar() {
           EnglishComm
         </Link>
 
-        {/* Menu Desktop */}
+        {/* MENU */}
         <div className="hidden md:flex items-center gap-8">
           <Link to="/" className="text-gray-700 hover:text-purple-600 font-medium transition">
-            Home
+            Trang chủ
           </Link>
 
-          {/* Learn Dropdown */}
+          {/* LEARN DROPDOWN */}
           <div
             className="relative"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
+            onMouseEnter={handleLearnEnter}
+            onMouseLeave={handleLearnLeave}
           >
             <button className="flex items-center gap-1 text-gray-700 hover:text-purple-600 font-medium transition">
-              Learn
+              Học tập
               <svg
-                className={`w-4 h-4 transition-transform duration-200 ${isLearnOpen ? "rotate-180" : ""}`}
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  isLearnOpen ? "rotate-180" : ""
+                }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -59,7 +112,6 @@ export default function Navbar() {
               </svg>
             </button>
 
-            {/* Dropdown - DÍNH SÁT, KHÔNG KHOẢNG TRỐNG */}
             <div
               className={`absolute left-0 mt-0 w-60 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transition-all duration-200 ${
                 isLearnOpen
@@ -68,52 +120,97 @@ export default function Navbar() {
               }`}
               style={{ top: "100%" }}
             >
-              {/* HỌC TỪ VỰNG */}
               <Link
                 to="/vocabulary-topics"
-                className="flex items-center gap-3 px-6 py-4 text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 hover:text-purple-600 transition font-medium"
-                onClick={() => setIsLearnOpen(false)} // Đóng dropdown khi click
-              >
-                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                <span>Học từ vựng</span>
-              </Link>
-
-              {/* GIAO TIẾP */}
-              <Link
-                to="/conversation-topics"
-                className="flex items-center gap-3 px-6 py-4 text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 hover:text-purple-600 transition font-medium"
+                className="block px-6 py-4 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 hover:text-purple-600 transition font-medium"
                 onClick={() => setIsLearnOpen(false)}
               >
-                <svg className="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-                <span>Giao tiếp</span>
+                Học từ vựng
+              </Link>
+
+              <Link
+                to="/conversation-topics"
+                className="block px-6 py-4 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 hover:text-purple-600 transition font-medium"
+                onClick={() => setIsLearnOpen(false)}
+              >
+                Giao tiếp
               </Link>
             </div>
           </div>
 
           <Link to="/practice" className="text-gray-700 hover:text-purple-600 font-medium transition">
-            Practice
+            Luyện tập
           </Link>
-          <Link to="/about" className="text-gray-700 hover:text-purple-600 font-medium transition">
-            About us
+
+          {/* THÊM PROGRESS VÀO ĐÂY */}
+          <Link to="/progress" className="text-gray-700 hover:text-purple-600 font-medium transition">
+            Tiến độ
+          </Link>
+
+          <Link to="/about-us" className="text-gray-700 hover:text-purple-600 font-medium transition">
+            Về chúng tôi
           </Link>
         </div>
 
-        {/* Auth + Avatar */}
-        <div className="flex items-center gap-4">
-          <Link to="/auth" className="text-gray-700 hover:text-purple-600 font-medium transition">
-            Log in
-          </Link>
-          <span className="text-gray-400">|</span>
-          <Link to="/auth" className="text-gray-700 hover:text-purple-600 font-medium transition">
-            Register
-          </Link>
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold shadow-md">
-            U
-          </div>
+        {/* USER */}
+        <div
+          className="relative"
+          onMouseEnter={handleUserEnter}
+          onMouseLeave={handleUserLeave}
+        >
+          {!user ? (
+            <div className="flex items-center gap-4">
+              <Link to="/auth" className="text-gray-700 hover:text-purple-600 font-medium">
+                Đăng nhập
+              </Link>
+              <span className="text-gray-400">|</span>
+              <Link to="/auth" className="text-gray-700 hover:text-purple-600 font-medium">
+                Đăng ký
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center gap-3 cursor-pointer">
+                {renderAvatar()}
+                <span className="text-gray-700 font-medium">
+                  {user.username}
+                </span>
+              </div>
+
+              <div
+                className={`absolute right-0 mt-2 w-44 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transition-all duration-200 ${
+                  isUserOpen
+                    ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                    : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
+                }`}
+              >
+                <Link
+                  to="/profile"
+                  className="block px-5 py-3 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition"
+                >
+                  Hồ sơ
+                </Link>
+
+                {user.role === "admin" && (
+                  <Link
+                    to="/admin/dashboard"
+                    className="block px-5 py-3 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition text-purple-600 font-medium"
+                  >
+                    Admin
+                  </Link>
+                )}
+
+                <hr />
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-5 py-3 text-red-500 hover:bg-red-50"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </nav>

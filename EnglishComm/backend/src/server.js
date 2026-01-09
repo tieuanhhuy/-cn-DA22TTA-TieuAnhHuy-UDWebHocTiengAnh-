@@ -1,33 +1,27 @@
-// backend/src/server.js
-const express = require('express');
-const cors = require('cors');
+// src/server.js
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+import app from "./app.js";
 
-require('./config/database');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+// ===== STATIC FILES (AVATAR, IMAGE) =====
+// avatar
+app.use(
+  "/avatars",
+  express.static(path.join(__dirname, "../public/avatars"))
+);
 
-// Routes
-const vocabularyRoutes = require('./routes/vocabulary');
-const conversationRoutes = require('./routes/conversation');
+// topic images
+app.use(
+  "/images",
+  express.static(path.join(__dirname, "../public/images"))
+);
 
-app.use('/api/vocabulary', vocabularyRoutes);
-app.use('/api/conversation', conversationRoutes);
-
-// Test
-app.get('/', (req, res) => {
-  res.json({
-    message: "EnglishComm Backend chạy mượt!",
-    apis: [
-      "/api/vocabulary/topics",
-      "/api/conversation/topics",
-      "/api/conversation/topic/1"
-    ]
-  });
-});
-
+// ===== START SERVER =====
 const PORT = 5000;
 app.listen(PORT, () => {
-  console.log(`Server chạy tại: http://localhost:${PORT}`);
+  console.log(`Backend running at http://localhost:${PORT}`);
 });
